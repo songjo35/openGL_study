@@ -7,7 +7,7 @@
 // 헤더온리 수학라이브러리
 #include <glm/glm.hpp>
 #include <vector>
-//#include "toys.h""
+#include "toys.h"
 
 void render(GLFWwindow* win);
 void init();
@@ -15,7 +15,7 @@ void init();
 // 메모리에서 데이터를 읽을때 4바이트씩 읽음
 float clearB = 0.f;
 
-//Program program;
+Program program;
 GLuint vertBuf = 0;
 GLuint vertArray = 0;
 GLuint triBuf = 0;
@@ -45,7 +45,7 @@ int main(void) {
 }
 void init() {
     // .vert: 데이터 전달(in vert), .freg: 데이터를 받으면 색을 칠함(out color)
-    program.loadShader("shader.vert", "shader.fleg");
+    program.loadShaders("shader.vert", "shader.frag");
     std::vector<glm::vec3> vert;
     // 화면중심0 위+ 아래-
     vert.push_back(glm::vec3(0, 0.7, 0));
@@ -57,13 +57,12 @@ void init() {
     vert.push_back(glm::vec3(1.0, -0.7, 0));
 
     std::vector<glm::u32vec3> triangles; // 부호없는 4바이트 벡터
-    triangles.push_back(glm::vec3(0, 1, 2));
-    triangles.push_back(glm::vec3(3, 4, 5));
+    triangles.push_back(glm::u32vec3(0, 1, 2));
+    triangles.push_back(glm::u32vec3(3, 4, 5));
 
     glGenVertexArrays(1, &vertArray);
     glBindVertexArray(vertArray);
 
-    std::vector<glm::u32vec3> indexBuf;
     // 버퍼 개수, 버퍼 주소 받기 ( 배열을 넘겨줘서 한번에 여러개 버퍼 등록가능 )
     glGenBuffers(1, &vertBuf);
     // gl array buffer 이름에 할당받은 버퍼를 등록
@@ -90,10 +89,10 @@ void init() {
 
 }
 void render(GLFWwindow* win) {
-    int width, height;
-    glfwGetFramebufferSize(win, &width, &height);
-    glViewport(0, 0, width, height);
-    glClearColor(0, 0, clearB, 0);
+    int w, h;
+    glfwGetFramebufferSize(win, &w, &h);
+    glViewport(0, 0, w, h);
+    glClearColor(0, 0, 0.2, 0);
     glClear(GL_COLOR_BUFFER_BIT);
 
     glUseProgram(program.programID);
@@ -103,6 +102,5 @@ void render(GLFWwindow* win) {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, triBuf);
     // 어떻게 그릴건지, 정점 몇개들어있는지, 저장된 타입, 버퍼에 인덱스가 있으면 0
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
     glfwSwapBuffers(win);
 }
